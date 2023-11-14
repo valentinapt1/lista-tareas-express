@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const middlewares = require('./middlewares');
 
 
 const PORT = 3000;
@@ -19,6 +20,8 @@ app.listen(PORT, ()=> {
 });
 
 app.use(express.json());
+
+app.use(middlewares.validateMethodsHTTP);
 
 const listViewRouter = require("./Llist-view-router");
 
