@@ -7,6 +7,26 @@ let tareas = [
     {id: 3, description: 'Lavar la loza', completed: true},
 ];
 
+//Middleware
+const validateList = (req, res, next) => {
+    const newTask = req.body;
+
+    if(!newTask || Object.keys(newTask).length === 0) {
+        res.status(400).json({ error: 'Cuerpo de solicitud vacío'});
+        return;
+    }
+    
+    if(!newTask.description ||typeof newTask.description !== 'string') {
+        res.status(400).json({error: 'Descripcion de tarea es solicitada y se necesita una cadena de carateres'});
+        return;
+    }
+    if(typeof newTask.completed !== 'boolean') {
+        res.status(400).json({error: 'Debe ser un booleano la tarea'});
+        return;
+    }
+    next();
+};
+
 
 listEditRouter.post("/created", (req, res) => {
     const nuevaTarea = req.body;
