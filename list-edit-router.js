@@ -1,56 +1,59 @@
 const express = require("express");
-const listEditRouter = express.Router();
+const listViewRouter = express.Router();
 
 let tareas = [
-    {id: 1, description: 'Aprender a programar', completado: false },
+    {id: 1, description: 'Aprender a programar', completed: false},
     {id: 2, description: 'Hacer el almuerzo', completed: false},
     {id: 3, description: 'Lavar la loza', completed: true},
 ];
 
-//Middleware
-const validateList = (req, res, next) => {
+//middlewares
+const validateTask = (req, res, next) => {
     const newTask = req.body;
 
-    if(!newTask || Object.keys(newTask).length === 0) {
-        res.status(400).json({ error: 'Cuerpo de solicitud vacío'});
-        return;
-    }
-    
-    if(!newTask.description ||typeof newTask.description !== 'string') {
-        res.status(400).json({error: 'Descripcion de tarea es solicitada y se necesita una cadena de carateres'});
-        return;
-    }
-    if(typeof newTask.completed !== 'boolean') {
-        res.status(400).json({error: 'Debe ser un booleano la tarea'});
-        return;
-    }
-    next();
+   if(!newTask || Object.keys(newTask).length === 0){
+    res.status(400).json({error: 'Cuerpo de solicitud vacío'});
+    return;
+   } 
+   if(!newTask.description || typeof newTask.description !== 'string') {
+    res.status(400).json({error:'debe ser una cadena de caracteres'});
+    return;
+   }
+
+   if(typeof newTask.completed !== 'boolean') {
+    res.status(400).json({error: 'debe ser booleano'});
+    return;
+   }
+   next();
 };
 
-
-listEditRouter.post("/created", (req, res) => {
-    const nuevaTarea = req.body;
-    tareas.push(nuevaTarea);
-    res.json({message: 'Tarea creada', tarea: nuevaTarea});
+//para crear una tarea POST
+listEditRouter.post ('/created', validateTask, (req, res) => {
+    const newTask = req.body
+    
+    newTask.push(newTask);
+    res.json({mesage: 'creada con exito', task: newTask});
 });
 
-listEditRouter.delete('/eliminar/:id', (req, res) => {
-    const taskId =req.params.id;
-    tareas = tareas.filter((tarea) => tarea.id !== parseInt(taskId));
-    res.json({message: 'Tarea eliminada'});
-});
-
-listEditRouter.put('/update/:id', (req, res) => {
+//actualizar una tarea (PUT)
+listEditRouter.put('/update/:id', validateTask, (req, res) => {
     const taskId = req.params.id;
-    const tareaUpdate = req.body;
-    tareas = tareas.map((tarea) => {
-        if (tarea.id === parseInt(taskId)) {
-            return tareaUpdate;
+    const taskUpdate = req.body;
+
+    task = task.map((task) => {
+        if (task.id === parseInt(taskId)) {
+            return taskUpdate;
         }
-        return tarea;
+        return task;
     });
-    res.json({message: 'Tarea actualizada', tarea: tareaUpdate});
+    res.json({message: 'actualizada con exito', tarea: taskUpdate});
+});
+
+//eliminar tarea (DELETE)
+listEditRouter.delete('/delete/:id', (req, res) => {
+    const taskId = req.params.id;
+    task = task.filter((task) => task.id !== parseInt(taskId));
+    res.json({message: 'eliminada con exito'});
 });
 
 module.exports = listEditRouter;
-
